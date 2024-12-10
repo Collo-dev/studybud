@@ -4,5 +4,10 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+
     path('room/<str:pk>', views.room, name='room'),  # Remove the trailing slash
+
+    path('create-room/', views.createRoom,name='create-room'),
+
+
 ]
