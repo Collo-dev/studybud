@@ -1,4 +1,8 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import Q
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from .models import Room,Topic
 from .forms import RoomForm
@@ -10,13 +14,22 @@ from .forms import RoomForm
 #     {'id':3, 'name':'Frontend developers'},
 # ]
 
-def home(request):
-    rooms=Room.objects.all()
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-    topics=Topic.objects.all()
+        try:
+            user= User.objects.get(username=username)
+        except:
+            messages.error(request, 'Username OR Password does not exist')
 
-    context={'rooms':rooms,'topics':topics}
-    return render(request, 'base/home.html',context)
+
+
+
+        
+    context = {}
+    return render(request, 'base/login_register.html', context)
 
 
 
@@ -56,3 +69,16 @@ def deleteRoom(request, pk):
         return redirect('home')
 
     return render(request, 'base/delete.html', {'obj': room})
+
+
+
+
+
+
+
+def home(request):
+    # Your view logic here, e.g., fetching data from models
+
+    context = {'topics': Topic, 'room_count': room_count, 'rooms': rooms}
+    #context = {'message': 'Welcome to StudyBud!'}  # Example context data
+    return render(request, 'base/home.html', context)
