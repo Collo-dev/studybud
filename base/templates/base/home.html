@@ -1,6 +1,8 @@
 {% extends "main.html" %}
 
 {% block content %}
+
+
 <h1>Room template</h1>
 <style>
   .home-container{
@@ -21,12 +23,15 @@
 
 {% for topic in topics %}
     <div>
-      <a href="{% url 'home' %}?q={{topic.name}}">{{topic}}</a>
+      <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}}</a>
     </div>
 
 {% endfor %}
 
   </div>
+
+
+  
   <div>
     <h5>{{room_count}} rooms available</h5>
     <a href="{% url 'create-room' %}">Create Room</a>
@@ -34,9 +39,10 @@
     {% for room in rooms %}
     <div>
 
-      
+      {% if request.user == room.host %}
       <a href="{% url 'update-room' room.id %}">Edit</a>
       <a href="{% url 'delete-room' room.id %}">Delete</a>
+      {% endif %}
 
       <span>@{{room.host.username}}</span>
 
