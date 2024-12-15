@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, Http404
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -105,7 +105,12 @@ def room(request, pk):
 
 def userProfile(request,pk):
     user=User.objects.get(id=pk)
-    context={'user':user}
+    room_messages=user.message_set.all()
+    rooms=user.room_set.all()
+    topics= Topic.objects.all()
+
+    context={'user':user, 'rooms': rooms,'room_messages':room_messages,'topics':topics}
+
     return render(request, 'base/profile.html', context)
 
 
@@ -143,12 +148,20 @@ def updateRoom(request,pk):
     return render(request,'base/room_form.html', context)
 
 
+# @login_required(login_url='login')
+# def deleteRoom(request, pk):
+#     room=Room.objects.get(id=pk)
+
+
 @login_required(login_url='login')
 def deleteRoom(request, pk):
-    room=Room.objects.get(id=pk)
+    try:
+        room = get_object_or_404(Room, id=pk)
+    except Http404:
+        return HttpResponse("The room you are trying to delete doesn't exist.")
 
     if request.user != room.host:
-        return HttpResponse('You are not a user!!')
+        return HttpResponse("You are not authorized to delete this room.")
 
     if request.method == 'POST':
         room.delete()
